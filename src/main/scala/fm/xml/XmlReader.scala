@@ -38,42 +38,38 @@ object XmlReader {
     require(is.markSupported, "Need an InputStream that supports mark()/reset()")
     is.mark(1024)
     
-    val inputFactory = new WstxInputFactory()
-    inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
-    inputFactory.configureForSpeed()
-
-    var xmlStreamReader: XMLStreamReader2 = null
-    
-    val res: Boolean = try {
-      xmlStreamReader = inputFactory.createXMLStreamReader(is).asInstanceOf[XMLStreamReader2]
-      while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
-      // If we found a START_ELEMENT then this looks like XML
-      xmlStreamReader.getEventType == START_ELEMENT
+    try {
+      withXMLStreamReader2(is){ xmlStreamReader: XMLStreamReader2 =>
+        // Check if there are any START_ELEMENT events
+        while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
+        
+        // If we found a START_ELEMENT then this looks like XML
+        xmlStreamReader.getEventType == START_ELEMENT
+      }
     } catch {
       case ex: Exception => false
     } finally {
-      xmlStreamReader.close()
+      is.reset()
     }
-    
-    is.reset()
-
-    res
   }
-  
-  def rootTag(f: File): String = InputStreamResource.forFile(f).use{ rootTag }
-  
-  private def rootTag(is: InputStream): String = {
+    
+  def withXMLStreamReader2[T](is: InputStream)(f: XMLStreamReader2 => T): T = {
     val inputFactory = new WstxInputFactory()
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
     inputFactory.configureForSpeed()
 
     import Resource._
-    Resource.using(inputFactory.createXMLStreamReader(is).asInstanceOf[XMLStreamReader2]) { xmlStreamReader: XMLStreamReader2 =>
-      while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
-      xmlStreamReader.getLocalName
-    }
+    Resource.using(inputFactory.createXMLStreamReader(is).asInstanceOf[XMLStreamReader2])(f)
   }
   
+  def rootTag(f: File): String = InputStreamResource.forFile(f).use{ rootTag }
+  
+  private def rootTag(is: InputStream): String = withXMLStreamReader2(is){ xmlStreamReader: XMLStreamReader2 =>
+    // Skip to the root tag (which is the first START_ELEMENT)
+    while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
+    xmlStreamReader.getLocalName
+  }
+    
   /**
    * Overrides the defaultNamespaceURI on elements/attributes.  This is used for the PIES feeds when the default namespace is not set
    * in the feed but JAXB expects the default namespace to be "http://www.aftermarket.org"

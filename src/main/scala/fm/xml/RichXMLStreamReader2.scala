@@ -166,7 +166,7 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
   def readElementText(): String = {
     sr.require(START_ELEMENT, null, null)
     
-    var done = false
+    var done: Boolean = false
     var text: String = ""
     
     while (!done && sr.hasNext()) {

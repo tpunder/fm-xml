@@ -17,17 +17,18 @@ package fm.xml
 
 import fm.common.{FileUtil, InputStreamResource, Resource, SingleUseResource}
 import java.io.{File, InputStream, InputStreamReader, OutputStream, Reader, StringReader}
+import java.nio.charset.StandardCharsets.UTF_8
 import scala.reflect.{ClassTag, classTag}
 
 final case class XmlReaderWriter[T: ClassTag](rootName: String, itemName: String, defaultNamespaceURI: String = "", overrideDefaultNamespaceURI: String = "") {
-  private[this] val encoding: String = "UTF-8"
   private[this] val classes: Seq[Class[_]] = Seq(classTag[T].runtimeClass)
   
-  def reader(f: File): XmlReader[T] = reader(InputStreamResource.forFileOrResource(f).reader(encoding))
-  def reader(is: InputStream): XmlReader[T] = reader(new InputStreamReader(is, encoding))
-  def reader(s: String): XmlReader[T] = reader(new StringReader(s))
-  def reader(r: Reader): XmlReader[T] = reader(SingleUseResource(r))
-  def reader(resource: Resource[Reader]) = new XmlReader(rootName, itemName, defaultNamespaceURI, overrideDefaultNamespaceURI, resource)
+  def reader(f: File)               : XmlReader[T] = reader(InputStreamResource.forFileOrResource(f))
+  def reader(r: InputStreamResource): XmlReader[T] = reader(r.reader(UTF_8))
+  def reader(is: InputStream)       : XmlReader[T] = reader(new InputStreamReader(is, UTF_8))
+  def reader(s: String)             : XmlReader[T] = reader(new StringReader(s))
+  def reader(r: Reader)             : XmlReader[T] = reader(SingleUseResource(r))
+  def reader(r: Resource[Reader])   : XmlReader[T] = new XmlReader(rootName, itemName, defaultNamespaceURI, overrideDefaultNamespaceURI, r)
   
   def write(f: File)(fun: XmlWriter => Unit) {
     FileUtil.writeFile(f, true){ os => write(os)(fun) }

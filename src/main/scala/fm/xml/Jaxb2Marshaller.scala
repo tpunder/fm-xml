@@ -21,6 +21,9 @@ import javax.xml.bind._
 import javax.xml.bind.annotation._
 import javax.xml.transform.stream.{StreamResult,StreamSource}
 
+/**
+ * TODO: Clean this up
+ */
 object Jaxb2Marshaller {
   def apply(packageName: String) = new Jaxb2Marshaller(packageName)
 }
@@ -29,6 +32,9 @@ sealed trait MarshallerOption
 case object XmlPretty extends MarshallerOption
 case object XmlFragment extends MarshallerOption
 
+/**
+ * TODO: Clean this up
+ */
 class Jaxb2Marshaller(val packageName: String) extends Logging {
   def this(packageName: String, options: MarshallerOption*) {
     this(packageName)
