@@ -30,28 +30,6 @@ import scala.reflect.{ClassTag, classTag}
 import RichXMLStreamReader2.toRichXMLStreamReader2
 
 object XmlReader {
-  // NOTE: Duplicated in FlatFileReader
-  def isXML(f: File): Boolean = InputStreamResource.forFile(f).buffered().use{ isXML }
-  
-  // NOTE: Duplicated in FlatFileReader
-  def isXML(is: InputStream): Boolean = {
-    require(is.markSupported, "Need an InputStream that supports mark()/reset()")
-    is.mark(1024)
-    
-    try {
-      withXMLStreamReader2(is){ xmlStreamReader: XMLStreamReader2 =>
-        // Check if there are any START_ELEMENT events
-        while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
-        
-        // If we found a START_ELEMENT then this looks like XML
-        xmlStreamReader.getEventType == START_ELEMENT
-      }
-    } catch {
-      case ex: Exception => false
-    } finally {
-      is.reset()
-    }
-  }
     
   def withXMLStreamReader2[T](is: InputStream)(f: XMLStreamReader2 => T): T = {
     val inputFactory = new WstxInputFactory()
@@ -60,14 +38,6 @@ object XmlReader {
 
     import Resource._
     Resource.using(inputFactory.createXMLStreamReader(is).asInstanceOf[XMLStreamReader2])(f)
-  }
-  
-  def rootTag(f: File): String = InputStreamResource.forFile(f).use{ rootTag }
-  
-  private def rootTag(is: InputStream): String = withXMLStreamReader2(is){ xmlStreamReader: XMLStreamReader2 =>
-    // Skip to the root tag (which is the first START_ELEMENT)
-    while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
-    xmlStreamReader.getLocalName
   }
     
   /**
