@@ -24,8 +24,30 @@ import javax.xml.transform.stream.{StreamResult,StreamSource}
 /**
  * TODO: Clean this up
  */
-object Jaxb2Marshaller {
-  def apply(packageName: String) = new Jaxb2Marshaller(packageName)
+object Jaxb2Marshaller extends Logging {
+  def apply(packageName: String, options: MarshallerOption*): Jaxb2Marshaller = {
+    val classes = ClassUtil.findAnnotatedClasses(packageName, classOf[XmlRootElement])
+    val context: JAXBContext = try {
+      JAXBContext.newInstance(classes.toArray: _*)
+    } catch {
+      case ex: Exception => 
+        logger.error(s"Caught exception trying to create JAXBContext for Jaxb2Marshaller($packageName) with classes: ${classes.map{_.getName}.mkString(", ")}", ex)
+        throw ex
+    }
+    
+    val res = apply(context)
+    
+    options.foreach{ o =>
+      o match {
+        case XmlPretty => res.pretty
+        case XmlFragment => res.fragment
+      }
+    }
+    
+    res
+  }
+  
+  def apply(context: JAXBContext): Jaxb2Marshaller = new Jaxb2Marshaller(context)
 }
 
 sealed trait MarshallerOption
@@ -35,27 +57,27 @@ case object XmlFragment extends MarshallerOption
 /**
  * TODO: Clean this up
  */
-class Jaxb2Marshaller(val packageName: String) extends Logging {
-  def this(packageName: String, options: MarshallerOption*) {
-    this(packageName)
-    options.foreach{ o =>
-      o match {
-        case XmlPretty => doFormatted = true
-        case XmlFragment => doFragment = true
-      }
-    }
-  }
+final class Jaxb2Marshaller(context: JAXBContext) extends Logging {
+//  def this(packageName: String, options: MarshallerOption*) {
+//    this(packageName)
+//    options.foreach{ o =>
+//      o match {
+//        case XmlPretty => doFormatted = true
+//        case XmlFragment => doFragment = true
+//      }
+//    }
+//  }
 
-  private val context: JAXBContext = {
-    val classes = ClassUtil.findAnnotatedClasses(packageName, classOf[XmlRootElement])
-    try {
-      JAXBContext.newInstance(classes.toArray: _*)
-    } catch {
-      case ex: Exception => 
-        logger.error(s"Caught exception trying to create JAXBContext for Jaxb2Marshaller($packageName) with classes: ${classes.map{_.getName}.mkString(", ")}", ex)
-        throw ex
-    }
-  }
+//  private val context: JAXBContext = {
+//    val classes = ClassUtil.findAnnotatedClasses(packageName, classOf[XmlRootElement])
+//    try {
+//      JAXBContext.newInstance(classes.toArray: _*)
+//    } catch {
+//      case ex: Exception => 
+//        logger.error(s"Caught exception trying to create JAXBContext for Jaxb2Marshaller($packageName) with classes: ${classes.map{_.getName}.mkString(", ")}", ex)
+//        throw ex
+//    }
+//  }
   
   private val marshaller: Marshaller = context.createMarshaller()
   private val unmarshaller: Unmarshaller = context.createUnmarshaller()
