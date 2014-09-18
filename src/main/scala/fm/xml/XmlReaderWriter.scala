@@ -23,7 +23,7 @@ final case class XmlReaderWriter[T: ClassTag](rootName: String, itemName: String
   private[this] val classes: Seq[Class[_]] = Seq(classTag[T].runtimeClass)
   
   def reader(f: File)               : XmlReader[T] = reader(InputStreamResource.forFileOrResource(f))
-  def reader(is: InputStream)       : XmlReader[T] = reader(InputStreamResource.wrap(is))
+  def reader(is: InputStream)       : XmlReader[T] = reader(InputStreamResource.forInputStream(is))
   def reader(r: InputStreamResource): XmlReader[T] = reader(r.reader())
   def reader(s: String)             : XmlReader[T] = reader(new StringReader(s))
   def reader(r: Reader)             : XmlReader[T] = reader(SingleUseResource(r))
