@@ -82,15 +82,23 @@ final class Jaxb2Marshaller(context: JAXBContext) extends Logging {
   private val marshaller: Marshaller = context.createMarshaller()
   private val unmarshaller: Unmarshaller = context.createUnmarshaller()
   
+  private var doFragment: Boolean = false
+  private var doFormatted: Boolean = false
+  private var indent: String = "    " // The default is 4 spaces
+  
   setMarshallerProperties()
-
-  private var doFragment = false
-  private var doFormatted = false
 
   private def setMarshallerProperties() {
     marshaller.setProperty(Marshaller.JAXB_FRAGMENT, doFragment)
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, doFormatted)
     marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8")
+    
+    try {
+      // This probably won't work on non stock JAXB implementations
+      marshaller.setProperty("com.sun.xml.internal.bind.indentString", indent)
+    } catch {
+      case _: javax.xml.bind.PropertyException => // ignore
+    }
   }
 
   def fragment: Jaxb2Marshaller = fragment(true)
@@ -101,23 +109,29 @@ final class Jaxb2Marshaller(context: JAXBContext) extends Logging {
   }
 
   def pretty: Jaxb2Marshaller = pretty(true)
-  def pretty(b:Boolean): Jaxb2Marshaller = {
+  def pretty(b: Boolean): Jaxb2Marshaller = {
     doFormatted = b
     setMarshallerProperties()
     this
   }
+  
+  def indent(s: String): Jaxb2Marshaller = {
+    indent = s
+    setMarshallerProperties()
+    this
+  }
 
-  def fromXml[T](xml:String): T = {
+  def fromXml[T](xml: String): T = {
     unmarshaller.unmarshal(new StreamSource(new StringReader(xml))).asInstanceOf[T]
   }
 
-  def toXml(o:Any): String = {
+  def toXml(o: Any): String = {
     val sw = new StringWriter
     marshaller.marshal(o, new StreamResult(sw))
     sw.toString
   }
 
-  def toXml(o:Any, os:java.io.OutputStream) {
+  def toXml(o: Any, os: java.io.OutputStream) {
     marshaller.marshal(o, new StreamResult(os))
   }
 }
