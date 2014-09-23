@@ -16,7 +16,6 @@
 package fm.xml
 
 import com.ctc.wstx.stax.WstxOutputFactory
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter // <---- BAD!
 import fm.common.Implicits._
 import java.io.{Closeable, OutputStream}
 import javax.xml.bind.{JAXBContext, Marshaller}
