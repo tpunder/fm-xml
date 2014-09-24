@@ -88,7 +88,7 @@ final class JAXBMarshaller[T: ClassTag](
     writer.toString()
   }
   
-  def toXML(obj: T, comments: XMLComments): String = {
+  def toXML(obj: T, comments: XMLCommentProvider): String = {
     val writer: StringWriter = new StringWriter()
     Resource.using(outputFactory.createXMLStreamWriter(writer)) { writer: XMLStreamWriter =>
       val wrapped: CommentingXMLStreamWriter = new CommentingXMLStreamWriter(new IndentingXMLStreamWriter(writer), comments)

@@ -33,7 +33,7 @@ class JAXBHelpers[T: ClassTag](
   final val marshaller: JAXBMarshaller[T] = new JAXBMarshaller[T](packageName = packageName, rootElement = rootElement, fragment = fragment, format = format, indent = indent)
   
   final def toXML(obj: T): String = marshaller.toXML(obj)
-  final def toXML(obj: T, comments: XMLComments): String = marshaller.toXML(obj, comments)
+  final def toXML(obj: T, comments: XMLCommentProvider): String = marshaller.toXML(obj, comments)
   
   final def fromXML(xml: String): T = marshaller.fromXML(xml)
 }
