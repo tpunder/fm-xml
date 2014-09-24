@@ -21,9 +21,7 @@ import javax.xml.bind._
 import javax.xml.bind.annotation._
 import javax.xml.transform.stream.{StreamResult,StreamSource}
 
-/**
- * TODO: Clean this up
- */
+@deprecated("Use fm.xml.JAXBMarshaller instead","")
 object Jaxb2Marshaller extends Logging {
   def apply(packageName: String, options: MarshallerOption*): Jaxb2Marshaller = {
     val classes = ClassUtil.findAnnotatedClasses(packageName, classOf[XmlRootElement])
@@ -79,12 +77,12 @@ final class Jaxb2Marshaller(context: JAXBContext) extends Logging {
 //    }
 //  }
   
-  private val marshaller: Marshaller = context.createMarshaller()
-  private val unmarshaller: Unmarshaller = context.createUnmarshaller()
+  private[this] val marshaller: Marshaller = context.createMarshaller()
+  private[this] val unmarshaller: Unmarshaller = context.createUnmarshaller()
   
-  private var doFragment: Boolean = false
-  private var doFormatted: Boolean = false
-  private var indent: String = "    " // The default is 4 spaces
+  private[this] var doFragment: Boolean = false
+  private[this] var doFormatted: Boolean = false
+  private[this] var indent: String = "    " // The default is 4 spaces
   
   setMarshallerProperties()
 

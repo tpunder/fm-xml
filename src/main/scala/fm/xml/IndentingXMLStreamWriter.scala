@@ -56,6 +56,16 @@ final case class IndentingXMLStreamWriter(protected val self: XMLStreamWriter, i
     }
   }
   
+  /**
+   * Write an indented comment so that is lines up with the next start element tag
+   */
+  def writeIndentedComment(data: String): Unit = {
+    if (depth > 0) super.writeCharacters("\n")
+    doIndent()
+    super.writeComment(data)
+    if (depth == 0) super.writeCharacters("\n")
+  }
+  
   override def writeStartDocument(): Unit = {
     super.writeStartDocument()
     super.writeCharacters("\n")

@@ -17,15 +17,12 @@ package fm.xml
 
 import scala.reflect.{ClassTag, classTag}
 
+@deprecated("Use fm.xml.JAXBHelpers instead","")
 class Jaxb2Helpers[T: ClassTag](packageName: String, rootElement: String, itemPath: String, defaultNamespaceURI: String = "", overrideDefaultNamespaceURI: String = "") {
-  private[this] val jaxb2Marshaller: ThreadLocal[Jaxb2Marshaller] = new ThreadLocal[Jaxb2Marshaller] {
-    override protected def initialValue: Jaxb2Marshaller = Jaxb2Marshaller(packageName).fragment.pretty
-  }
+  private[this] val helpers: JAXBHelpers[T] = new JAXBHelpers[T](packageName = packageName, rootElement = rootElement, itemPath = itemPath, defaultNamespaceURI = defaultNamespaceURI, overrideDefaultNamespaceURI = overrideDefaultNamespaceURI)
   
-  def withJaxb2Marshaller[X](f: Jaxb2Marshaller => X): X = f(jaxb2Marshaller.get)
-
-  def toXml(fp: T): String = withJaxb2Marshaller(_.toXml(fp))
-  def fromXml(xml: String): T = withJaxb2Marshaller(_.fromXml[T](xml))
+  def toXml(obj: T): String = helpers.toXML(obj)
+  def fromXml(xml: String): T = helpers.fromXML(xml)
   
-  val xmlReaderWriter: XmlReaderWriter[T] = XmlReaderWriter(rootElement, itemPath, defaultNamespaceURI = defaultNamespaceURI, overrideDefaultNamespaceURI = overrideDefaultNamespaceURI)
+  val xmlReaderWriter: XmlReaderWriter[T] = helpers.xmlReaderWriter
 }
