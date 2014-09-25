@@ -19,10 +19,10 @@ import scala.reflect.{ClassTag, classTag}
 
 @deprecated("Use fm.xml.JAXBHelpers instead","")
 class Jaxb2Helpers[T: ClassTag](packageName: String, rootElement: String, itemPath: String, defaultNamespaceURI: String = "", overrideDefaultNamespaceURI: String = "") {
-  private[this] val helpers: JAXBHelpers[T] = new JAXBHelpers[T](packageName = packageName, rootElement = rootElement, itemPath = itemPath, defaultNamespaceURI = defaultNamespaceURI, overrideDefaultNamespaceURI = overrideDefaultNamespaceURI)
+  private[this] val helpers: JAXBHelpers[T] = new JAXBHelpers[T](packageName = packageName, rootElement = rootElement, itemPath = itemPath, defaultNamespaceURI = defaultNamespaceURI, overrideDefaultNamespaceURI = overrideDefaultNamespaceURI, fragment = true, format = true, indent = "    ")
   
   def toXml(obj: T): String = helpers.toXML(obj)
   def fromXml(xml: String): T = helpers.fromXML(xml)
   
-  val xmlReaderWriter: XmlReaderWriter[T] = helpers.xmlReaderWriter
+  def xmlReaderWriter: XmlReaderWriter[T] = helpers.xmlReaderWriter
 }
