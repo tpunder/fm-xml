@@ -104,7 +104,7 @@ final class JAXBMarshaller[T: ClassTag](
   
   def writeXML(obj: T, writer: XMLStreamWriter): Unit = {
     val wrapped: XMLStreamWriter = if (format) IndentingXMLStreamWriter(writer, indent = indent) else writer
-    marshaller.get().marshal(obj, writer)
+    marshaller.get().marshal(obj, wrapped)
   }
   
   def writeXML(obj: T, writer: IndentingXMLStreamWriter): Unit = marshaller.get().marshal(obj, writer)
