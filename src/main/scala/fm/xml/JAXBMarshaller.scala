@@ -41,7 +41,7 @@ final class JAXBMarshaller[T: ClassTag](
   rootElement: String,
   fragment: Boolean = true,
   format: Boolean = true,
-  indent: String = "    "
+  indent: String = "  "
 ) extends Logging {
   
   import JAXBMarshaller._
