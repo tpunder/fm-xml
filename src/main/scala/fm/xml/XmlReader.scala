@@ -117,7 +117,7 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
       // Move to the next relevant tag
       seekToNextElement()
       
-      while(xmlStreamReader.isStartElement && currentDepth >= 0) {
+      while (xmlStreamReader.isStartElement && currentDepth >= 0) {
         xmlStreamReader.require(START_ELEMENT, null, itemName)
         val item = unmarshaller.unmarshal(xmlStreamReader, itemClass).getValue
         f(item)
@@ -136,11 +136,11 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
     var done: Boolean = false
 
     while (!done) {
-      if(xmlStreamReader.isStartElement) {
+      if (xmlStreamReader.isStartElement) {
         // We found the parent or child element we are looking for
         if(xmlStreamReader.getLocalName() == path(currentDepth)) {
           
-          if(currentDepth == targetDepth) {
+          if (currentDepth == targetDepth) {
             // This is the child element we are looking for
             done = true
           } else {
@@ -152,15 +152,15 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
           // This isn't an element we care about, skip it (including anything under it)
           xmlStreamReader.skipElement()
         }        
-      } else if(xmlStreamReader.isEndElement) {
+      } else if (xmlStreamReader.isEndElement) {
         currentDepth -= 1
         
         // If the currentDepth goes negative then we should have reached the end of the XML document
-        if(currentDepth < 0) done = true
+        if (currentDepth < 0) done = true
       }
       
       // Advance to the next event
-      if(xmlStreamReader.hasNext() && !done) xmlStreamReader.next() else done = true
+      if (xmlStreamReader.hasNext() && !done) xmlStreamReader.next() else done = true
     }
     
     currentDepth
@@ -169,7 +169,7 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
   protected def consumeRestOfStream(xmlStreamReader: XMLStreamReader2) {
     var done: Boolean = false
     
-    while(!done && xmlStreamReader.hasNext()) {
+    while (!done && xmlStreamReader.hasNext()) {
       try {
         xmlStreamReader.next()
         if(xmlStreamReader.isStartElement()) logger.warn("Unexpected start element: "+xmlStreamReader.getLocalName())
