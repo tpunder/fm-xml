@@ -94,7 +94,7 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
     if (sr.getEventType == START_ELEMENT) sr.skipElement()
     
-    var done = false
+    var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
@@ -147,9 +147,9 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
     if (sr.getEventType == START_ELEMENT) sr.skipElement()
     
-    var done = false
+    var done: Boolean = false
     
-    while(!done && sr.hasNext) {
+    while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
       if (tpe == START_ELEMENT) sr.skipElement()
       else if (tpe == END_ELEMENT && sr.getDepth == targetDepth) done = true
@@ -207,8 +207,8 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
    * Returns the depth that the element was found at
    */
   def seekToAnyMatching(name: String): Int = {
-    var depth = 0
-    var done = false
+    var depth: Int = 0
+    var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
@@ -234,9 +234,9 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     
     val pathParts: Array[String] = path.split('/')
     
-    val startingDepth = sr.getDepth()
+    val startingDepth: Int = sr.getDepth()
    
-    var done = false
+    var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
