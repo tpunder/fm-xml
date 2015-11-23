@@ -17,13 +17,6 @@ package fm.xml
 
 import fm.common.Implicits._
 
-//object XMLCommentProvider {
-//  def apply(leading: Map[String,String] = Map.empty, trailing: Map[String,String] = Map.empty): XMLCommentProvider = new XMLCommentProvider {
-//    def leadingComment(path: String, attributes: Map[String,String], value: Option[String]): Option[String] = leading.get(path).flatMap{ _.toBlankOption }
-//    def trailingComment(path: String, attributes: Map[String,String], value: Option[String]): Option[String] = trailing.get(path).flatMap{ _.toBlankOption }
-//  }
-//}
-
 trait XMLCommentProvider {
   def leadingComment(path: String, attributes: Map[String,String], value: Option[String]): Option[String]
   def trailingComment(path: String, attributes: Map[String,String], value: Option[String]): Option[String]

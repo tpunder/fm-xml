@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Frugal Mechanic (http://frugalmechanic.com)
+ * Copyright 2015 Frugal Mechanic (http://frugalmechanic.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import javax.xml.stream.XMLStreamException
 import scala.annotation.{tailrec, switch}
 
 object RichXMLStreamReader2 {
-  // This cannot be in Implicits since it's an optional dependency
   implicit def toRichXMLStreamReader2(sr: org.codehaus.stax2.XMLStreamReader2): RichXMLStreamReader2 = new RichXMLStreamReader2(sr)
 }
 
@@ -71,6 +70,8 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     sr.next()
   }
   
+  def seekToSiblingElement(): Unit = seekToSiblingElement(null)
+  
   /**
    * Seek to the first sibling element (the first START_ELEMENT at the current depth) that matching name
    * 
@@ -89,26 +90,32 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
    *  and end up on the second <target> element that is a sibling to <foo> 
    */
   def seekToSiblingElement(name: String): Unit = {
+    if (!trySeekToSiblingElement(name)) throw new XMLStreamException(s"Couldn't find matching child element: $name", sr.getLocation())
+  }
+  
+  def trySeekToSiblingElement(): Boolean = trySeekToSiblingElement(null)
+  
+  def trySeekToSiblingElement(name: String): Boolean = {
     requireEither(START_ELEMENT, END_ELEMENT)
     
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
     if (sr.getEventType == START_ELEMENT) sr.skipElement()
     
-    var done: Boolean = false
-    
-    while (!done && sr.hasNext) {
+    while (sr.hasNext) {
       val tpe: Int = sr.next()
       
       if (tpe == START_ELEMENT) {
-        if (sr.getLocalName == name) done = true
+        if (null == name || sr.getLocalName == name) return true
         else sr.skipElement()
       } else if (tpe == END_ELEMENT) {
-        throw new XMLStreamException(s"Couldn't find matching child element: $name", sr.getLocation())
+        return false
       }
     }
     
-    sr.require(START_ELEMENT, null, name)
+    false
   }
+
+  def seekToChildElement(): Unit = seekToChildElement(null)
   
   def seekToChildElement(name: String): Unit = {
     if (trySeekToChildElement(name)) {
@@ -118,6 +125,8 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     }
   }
   
+  def trySeekToChildElement(): Boolean = trySeekToChildElement(null)
+  
   def trySeekToChildElement(name: String): Boolean = {
     // We should be pointing at a start element
     sr.require(START_ELEMENT, null, null)
@@ -126,7 +135,7 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
       val tpe: Int = sr.next()
       
       if (tpe == START_ELEMENT) {
-        if (sr.getLocalName == name) return true
+        if (null == name || sr.getLocalName == name) return true
         else sr.skipElement()
       } else if (tpe == END_ELEMENT) {
         // No matching element

@@ -52,6 +52,18 @@ final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
     intercept[XMLStreamException] { sr.seekToChildElement("items_foo") }
   }
   
+  test("seekToNextSiblingElement()") {
+    var sr = createSR()
+    sr.seekToRootElement()
+    sr.seekToChildElement()
+    sr.getLocalName() should equal ("header")
+    sr.seekToSiblingElement()
+    sr.getLocalName() should equal ("items")
+    sr.seekToSiblingElement()
+    sr.getLocalName() should equal ("trailer")
+    intercept[XMLStreamException] { sr.seekToSiblingElement() }
+  }
+  
   test("Simple Document Traversing") {
     var sr = createSR()
     sr.seekToRootElement()

@@ -15,6 +15,6 @@
  */
 package fm.xml
 
-import javax.xml.stream.XMLStreamWriter
+import org.codehaus.stax2.XMLStreamWriter2
 
-final case class IndentingXMLStreamWriter(protected val self: XMLStreamWriter, indent: String = "  ") extends IndentingXMLStreamWriterBase
+final case class IndentingXMLStreamWriter2(protected val self: XMLStreamWriter2, indent: String = "  ") extends IndentingXMLStreamWriterBase with XMLStreamWriter2Proxy
