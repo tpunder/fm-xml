@@ -16,7 +16,7 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversion
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.4.0-SNAPSHOT",
+  "com.frugalmechanic" %% "fm-common" % "0.6.0-SNAPSHOT",
   "com.frugalmechanic" %% "fm-lazyseq" % "0.4.0-SNAPSHOT",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2",
   "com.fasterxml.woodstox" % "woodstox-core" % "5.0.2",
