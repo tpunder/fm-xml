@@ -17,5 +17,5 @@ libraryDependencies ++= Seq(
   "com.frugalmechanic" %% "fm-lazyseq" % "0.5.0-SNAPSHOT",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2",
   "com.fasterxml.woodstox" % "woodstox-core" % "5.0.2",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
