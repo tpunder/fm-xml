@@ -15,8 +15,6 @@
  */
 package fm.xml
 
-import fm.common.Implicits._
-
 trait XMLCommentProvider {
   def leadingComment(path: String, attributes: Map[String,String], value: Option[String]): Option[String]
   def trailingComment(path: String, attributes: Map[String,String], value: Option[String]): Option[String]

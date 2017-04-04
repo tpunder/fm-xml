@@ -18,7 +18,7 @@ package fm.xml
 import org.codehaus.stax2.XMLStreamReader2
 import javax.xml.stream.XMLStreamConstants._
 import javax.xml.stream.XMLStreamException
-import scala.annotation.{tailrec, switch}
+import scala.annotation.switch
 
 object RichXMLStreamReader2 {
   implicit def toRichXMLStreamReader2(sr: org.codehaus.stax2.XMLStreamReader2): RichXMLStreamReader2 = new RichXMLStreamReader2(sr)

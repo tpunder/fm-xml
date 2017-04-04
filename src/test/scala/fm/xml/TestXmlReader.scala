@@ -15,8 +15,6 @@
  */
 package fm.xml
 
-import java.io.ByteArrayInputStream
-import java.nio.charset.StandardCharsets.UTF_8
 import org.scalatest.{FunSuite, Matchers}
 
 final class TestXmlReader extends FunSuite with Matchers {

@@ -17,9 +17,9 @@ package fm.xml
 
 import com.ctc.wstx.stax.WstxInputFactory
 import fm.common.Implicits._
-import fm.common.{InputStreamResource, Logging, Resource}
+import fm.common.{Logging, Resource}
 import fm.lazyseq.ResourceLazySeq
-import java.io.{File, InputStream, Reader}
+import java.io.{InputStream, Reader}
 import javax.xml.bind.{JAXBContext, Unmarshaller}
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamConstants.START_ELEMENT

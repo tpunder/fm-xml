@@ -16,9 +16,7 @@
 package fm.xml
 
 
-import javax.xml.stream.XMLStreamConstants._
-import javax.xml.stream.{XMLStreamException, XMLStreamWriter}
-import scala.annotation.{tailrec, switch}
+import javax.xml.stream.XMLStreamWriter
 
 object RichXMLStreamWriter {
   // This cannot be in Implicits since it's an optional dependency

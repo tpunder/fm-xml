@@ -16,7 +16,7 @@
 package fm.xml
 
 import fm.common.{FileUtil, InputStreamResource, Resource, SingleUseResource}
-import java.io.{File, InputStream, InputStreamReader, OutputStream, Reader, StringReader}
+import java.io.{File, InputStream, OutputStream, Reader, StringReader}
 import scala.reflect.{ClassTag, classTag}
 
 final case class XmlReaderWriter[T: ClassTag](rootName: String, itemName: String, defaultNamespaceURI: String = "", overrideDefaultNamespaceURI: String = "") {

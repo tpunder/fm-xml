@@ -15,7 +15,7 @@
  */
 package fm.xml
 
-import scala.reflect.{ClassTag, classTag}
+import scala.reflect.ClassTag
 
 @deprecated("Use fm.xml.JAXBHelpers instead","")
 class Jaxb2Helpers[T: ClassTag](packageName: String, rootElement: String, itemPath: String, defaultNamespaceURI: String = "", overrideDefaultNamespaceURI: String = "") {

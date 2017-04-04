@@ -19,12 +19,11 @@ import fm.common.{InputStreamResource, Resource, SingleUseResource}
 import com.ctc.wstx.stax.WstxInputFactory
 import com.ctc.wstx.exc.WstxParsingException
 import com.frugalmechanic.optparse._
-import java.io.{File, FileInputStream, Reader}
+import java.io.{File, Reader}
 import javax.xml.stream.XMLInputFactory
 import org.codehaus.stax2.validation.XMLValidationSchemaFactory
 import org.codehaus.stax2.validation.XMLValidationSchema
 import org.codehaus.stax2.XMLStreamReader2
-import org.codehaus.stax2.XMLInputFactory2
 import org.codehaus.stax2.validation.Validatable
 import org.codehaus.stax2.validation.ValidationProblemHandler
 import org.codehaus.stax2.validation.XMLValidationException

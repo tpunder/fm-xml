@@ -20,7 +20,7 @@ import java.io.{Closeable, InputStream, OutputStream, Reader, StringReader, Stri
 import javax.xml.bind.{JAXBContext, Marshaller, Unmarshaller}
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.stream.{XMLInputFactory, XMLOutputFactory, XMLStreamReader, XMLStreamWriter}
-import scala.reflect.{ClassTag, classTag}
+import scala.reflect.ClassTag
 
 object JAXBMarshaller {
   private val inputFactory: XMLInputFactory = XMLInputFactory.newInstance()
