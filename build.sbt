@@ -6,9 +6,9 @@ version := "0.5.0-SNAPSHOT"
 
 description := "XML utilities"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.2"
 
-crossScalaVersions := Seq("2.11.8", "2.12.1")
+crossScalaVersions := Seq("2.11.11", "2.12.2")
 
 scalacOptions := Seq(
   "-unchecked",
