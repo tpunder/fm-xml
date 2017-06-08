@@ -2,7 +2,7 @@ FMPublic
 
 name := "fm-xml"
 
-version := "0.5.0-SNAPSHOT"
+version := "0.5.0"
 
 description := "XML utilities"
 
@@ -25,8 +25,8 @@ scalacOptions := Seq(
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.8.0-SNAPSHOT",
-  "com.frugalmechanic" %% "fm-lazyseq" % "0.6.0-SNAPSHOT",
+  "com.frugalmechanic" %% "fm-common" % "0.8.0",
+  "com.frugalmechanic" %% "fm-lazyseq" % "0.6.0",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2",
   "com.fasterxml.woodstox" % "woodstox-core" % "5.0.2",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
