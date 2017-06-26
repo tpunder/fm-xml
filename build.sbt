@@ -2,8 +2,6 @@ FMPublic
 
 name := "fm-xml"
 
-version := "0.6.0-SNAPSHOT"
-
 description := "XML utilities"
 
 scalaVersion := "2.12.2"
