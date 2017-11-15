@@ -4,9 +4,9 @@ name := "fm-xml"
 
 description := "XML utilities"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.4"
 
-crossScalaVersions := Seq("2.11.11", "2.12.2")
+crossScalaVersions := Seq("2.11.11", "2.12.4")
 
 scalacOptions := Seq(
   "-unchecked",
@@ -17,7 +17,8 @@ scalacOptions := Seq(
   "-Ywarn-unused-import"
 ) ++ (if (scalaVersion.value.startsWith("2.12")) Seq(
   // Scala 2.12 specific compiler flags
-  "-opt:l:project"
+  "-opt:l:inline",
+  "-opt-inline-from:<sources>"
 ) else Nil)
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
