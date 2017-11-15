@@ -27,7 +27,7 @@ import RichXMLStreamReader2.toRichXMLStreamReader2
 final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
   
   test("seekToRootElement()") {
-    val sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     sr.seekToRootElement("root")
     sr.getDepth should equal (1)
     sr.getEventType should equal (START_ELEMENT)
@@ -35,25 +35,25 @@ final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
   }
   
   test("seekToSiblingElement - Exception") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     sr.seekToRootElement()
     intercept[XMLStreamException] { sr.seekToSiblingElement("header") }
   }
   
   test("seekToChildElement()") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     sr.seekToRootElement()
     sr.seekToChildElement("items")
   }
   
   test("seekToChildElement() - Exception") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     sr.seekToRootElement()
     intercept[XMLStreamException] { sr.seekToChildElement("items_foo") }
   }
   
   test("seekToNextSiblingElement()") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     sr.seekToRootElement()
     sr.seekToChildElement()
     sr.getLocalName() should equal ("header")
@@ -65,7 +65,7 @@ final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
   }
   
   test("Simple Document Traversing") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     sr.seekToRootElement()
     sr.seekToChildElement("items")
     sr.seekToChildElement("item")
@@ -78,7 +78,7 @@ final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
   }
   
   test("foreach - root/items/item") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     val builder = Vector.newBuilder[String]
     
     sr.foreach("root/items/item") {
@@ -89,7 +89,7 @@ final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
   }
   
   test("foreach - root/items/item/name") {
-    var sr = createSR()
+    val sr: XMLStreamReader2 = createSR()
     val builder = Vector.newBuilder[String]
     
     sr.foreach("root/items/item/name") {
@@ -98,9 +98,51 @@ final class TestRichXMLStreamReader2 extends FunSuite with Matchers {
     
     builder.result should equal (Vector("Item 1 Name", "Item 2 Name"))
   }
+
+  test("readElementAsXMLString - 1") {
+    val sr: XMLStreamReader2 = createSR()
+
+    sr.seekToRootElement()
+    sr.seekToChildElement("items")
+    sr.readElementAsXMLString should equal (
+      """<items>
+        |    <item idx="1">
+        |      <name>Item 1 Name</name>
+        |    </item>
+        |    <item idx="2">
+        |      <name>Item 2 Name</name>
+        |    </item>
+        |    <items foo="bar">
+        |      <item idx="1">
+        |        <name>Sub Item 1 name</name>
+        |      </item>
+        |    </items>
+        |  </items>""".stripMargin)
+
+    sr.seekToSiblingElement()
+    sr.getLocalName() should equal ("trailer")
+  }
+
+  test("readElementAsXMLString - 2") {
+    val sr: XMLStreamReader2 = createSR()
+
+    sr.seekToRootElement()
+    sr.seekToChildElement("items") // The outer <items> element
+    sr.seekToChildElement("items") // The inner nested <items> element
+    sr.readElementAsXMLString should equal (
+      """<items foo="bar">
+        |      <item idx="1">
+        |        <name>Sub Item 1 name</name>
+        |      </item>
+        |    </items>""".stripMargin)
+
+    sr.seekToEndOfParentElement() // Gets us back to the outer <items> element
+    sr.seekToSiblingElement() // Should advance us to the <trailer> element
+    sr.getLocalName() should equal ("trailer")
+  }
   
   private def createSR(): XMLStreamReader2 = {
-    val inputFactory = new WstxInputFactory()
+    val inputFactory: WstxInputFactory = new WstxInputFactory()
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
     inputFactory.configureForSpeed()
     inputFactory.createXMLStreamReader(new StringReader(xml)).asInstanceOf[XMLStreamReader2]
@@ -119,6 +161,11 @@ val xml = """
     <item idx="2">
       <name>Item 2 Name</name>
     </item>
+    <items foo="bar">
+      <item idx="1">
+        <name>Sub Item 1 name</name>
+      </item>
+    </items>
   </items>
   <trailer>
     <name>Trailer Name</name>

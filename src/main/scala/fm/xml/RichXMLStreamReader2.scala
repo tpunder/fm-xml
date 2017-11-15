@@ -15,9 +15,15 @@
  */
 package fm.xml
 
-import org.codehaus.stax2.XMLStreamReader2
+import com.ctc.wstx.stax.{WstxInputFactory, WstxOutputFactory}
+import fm.common.Implicits._
+import fm.common.Resource
+import java.io.StringWriter
 import javax.xml.stream.XMLStreamConstants._
-import javax.xml.stream.XMLStreamException
+import javax.xml.stream.{XMLEventReader, XMLEventWriter, XMLInputFactory, XMLStreamException}
+import javax.xml.transform.stax.{StAXResult, StAXSource}
+import javax.xml.transform.{Transformer, TransformerFactory}
+import org.codehaus.stax2.{XMLStreamReader2, XMLStreamWriter2}
 import scala.annotation.switch
 
 object RichXMLStreamReader2 {
@@ -29,7 +35,7 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
    * Opposite of XMLStreamReader.require()
    */
   def requireNot(tpe: Int): Unit = {
-    if (sr.getEventType() == tpe) throw new XMLStreamException(s"Expected current tag to be NOT $tpe", sr.getLocation())
+    if (sr.getEventType() === tpe) throw new XMLStreamException(s"Expected current tag to be NOT $tpe", sr.getLocation())
   }
   
   def requireEither(one: Int, two: Int): Unit = {
@@ -50,7 +56,7 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
    * Given a freshly opened XMLStreamReader2, move to the START_ELEMENT of the ROOT element (skipping stuff like DTDs) and require that the root name be the expectedName
    */
   def seekToRootElement(expectedName: String): Unit = {
-    require (sr.getDepth() == 0, "Current Depth should be 0!")
+    require (sr.getDepth() === 0, "Current Depth should be 0!")
     while (sr.getEventType != START_ELEMENT) sr.next()
     if (null != expectedName) sr.require(START_ELEMENT, null, expectedName)
   }
@@ -99,15 +105,15 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     requireEither(START_ELEMENT, END_ELEMENT)
     
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
-    if (sr.getEventType == START_ELEMENT) sr.skipElement()
+    if (sr.getEventType === START_ELEMENT) sr.skipElement()
     
     while (sr.hasNext) {
       val tpe: Int = sr.next()
       
-      if (tpe == START_ELEMENT) {
-        if (null == name || sr.getLocalName == name) return true
+      if (tpe === START_ELEMENT) {
+        if (null == name || sr.getLocalName === name) return true
         else sr.skipElement()
-      } else if (tpe == END_ELEMENT) {
+      } else if (tpe === END_ELEMENT) {
         return false
       }
     }
@@ -134,10 +140,10 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     while (sr.hasNext) {
       val tpe: Int = sr.next()
       
-      if (tpe == START_ELEMENT) {
-        if (null == name || sr.getLocalName == name) return true
+      if (tpe === START_ELEMENT) {
+        if (null == name || sr.getLocalName === name) return true
         else sr.skipElement()
-      } else if (tpe == END_ELEMENT) {
+      } else if (tpe === END_ELEMENT) {
         // No matching element
         return false
       }
@@ -154,18 +160,18 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     require(targetDepth >= 0, "Already at depth 0")
     
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
-    if (sr.getEventType == START_ELEMENT) sr.skipElement()
+    if (sr.getEventType === START_ELEMENT) sr.skipElement()
     
     var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
-      if (tpe == START_ELEMENT) sr.skipElement()
-      else if (tpe == END_ELEMENT && sr.getDepth == targetDepth) done = true
+      if (tpe === START_ELEMENT) sr.skipElement()
+      else if (tpe === END_ELEMENT && sr.getDepth === targetDepth) done = true
     }
     
     
-    require(sr.getDepth() == targetDepth, s"Something failed:  Target Depth: $targetDepth  Current Depth: ${sr.getDepth()}") 
+    require(sr.getDepth() === targetDepth, s"Something failed:  Target Depth: $targetDepth  Current Depth: ${sr.getDepth()}") 
     sr.require(END_ELEMENT, null, null)
   }
   
@@ -194,6 +200,36 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     
     text
   }
+
+  def readElementAsXMLString(): String = {
+    sr.require(START_ELEMENT, null, null)
+
+    val sw: StringWriter = new StringWriter()
+
+    val outputFactory: WstxOutputFactory = new WstxOutputFactory()
+    outputFactory.configureForSpeed()
+
+    import Resource.toCloseable
+
+    Resource.using(outputFactory.createXMLStreamWriter(sw).asInstanceOf[XMLStreamWriter2]) { writer: XMLStreamWriter2 =>
+      val startingDepth: Int = sr.getDepth()
+      var done: Boolean = false
+
+      writer.copyEventFromReader(sr, false)
+
+      while(!done && sr.hasNext) {
+        val res: Int = sr.next()
+
+        if (res === END_ELEMENT && sr.getDepth === startingDepth) {
+          done = true
+        }
+
+        writer.copyEventFromReader(sr, false)
+      }
+    }
+
+    sw.toString()
+  }
   
   def tryReadChildElementText(name: String): Option[String] = {
     if (trySeekToChildElement(name)) {
@@ -221,10 +257,10 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
-      if (tpe == START_ELEMENT) {
+      if (tpe === START_ELEMENT) {
         depth += 1
-        if (sr.getLocalName == name) done = true
-      } else if (tpe == END_ELEMENT) {
+        if (sr.getLocalName === name) done = true
+      } else if (tpe === END_ELEMENT) {
         depth -= 1
       }
     }
@@ -250,23 +286,22 @@ final class RichXMLStreamReader2(val sr: XMLStreamReader2) extends AnyVal {
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
       
-      if (tpe == START_ELEMENT) {
+      if (tpe === START_ELEMENT) {
         val depth: Int = sr.getDepth()
         val pathIdx: Int = depth - startingDepth - 1
         
         if (sr.getLocalName() != pathParts(pathIdx)) sr.skipElement()
-        else if (pathIdx == pathParts.length - 1) {
+        else if (pathIdx === pathParts.length - 1) {
           // Call the user function
           f
-          require(sr.getDepth == depth, s"Invalid Usage of Foreach.  Expected to end at the same depth we started!  Depth before calling f: $depth   Depth after calling f:  ${sr.getDepth}")
+          require(sr.getDepth === depth, s"Invalid Usage of Foreach.  Expected to end at the same depth we started!  Depth before calling f: $depth   Depth after calling f:  ${sr.getDepth}")
         }
-      } else if (tpe == END_ELEMENT && sr.getDepth == startingDepth) {
+      } else if (tpe === END_ELEMENT && sr.getDepth === startingDepth) {
         // This is the END_ELEMENT event of the tag we started with so we are done
         done = true
       }
     }
 
-    require(sr.getDepth == startingDepth, "Should have ended at the same depth we started!")
+    require(sr.getDepth === startingDepth, "Should have ended at the same depth we started!")
   }
-
 }
