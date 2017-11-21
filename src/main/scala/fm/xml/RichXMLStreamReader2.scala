@@ -15,14 +15,12 @@
  */
 package fm.xml
 
-import com.ctc.wstx.stax.{WstxInputFactory, WstxOutputFactory}
+import com.ctc.wstx.stax.WstxOutputFactory
 import fm.common.Implicits._
 import fm.common.Resource
 import java.io.StringWriter
 import javax.xml.stream.XMLStreamConstants._
-import javax.xml.stream.{XMLEventReader, XMLEventWriter, XMLInputFactory, XMLStreamException}
-import javax.xml.transform.stax.{StAXResult, StAXSource}
-import javax.xml.transform.{Transformer, TransformerFactory}
+import javax.xml.stream.XMLStreamException
 import org.codehaus.stax2.{XMLStreamReader2, XMLStreamWriter2}
 import scala.annotation.switch
 
