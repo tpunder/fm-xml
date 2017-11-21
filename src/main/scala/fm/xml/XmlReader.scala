@@ -19,25 +19,50 @@ import com.ctc.wstx.stax.WstxInputFactory
 import fm.common.Implicits._
 import fm.common.{Logging, Resource}
 import fm.lazyseq.ResourceLazySeq
-import java.io.{InputStream, Reader}
+import java.io.{InputStream, Reader, StringReader}
 import javax.xml.bind.{JAXBContext, Unmarshaller}
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamConstants.START_ELEMENT
 import org.codehaus.stax2.XMLStreamReader2
 import org.codehaus.stax2.util.StreamReader2Delegate
 import scala.reflect.{ClassTag, classTag}
-
 import RichXMLStreamReader2.toRichXMLStreamReader2
+import scala.util.Try
 
 object XmlReader {
-    
-  def withXMLStreamReader2[T](is: InputStream)(f: XMLStreamReader2 => T): T = {
-    val inputFactory = new WstxInputFactory()
-    inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
-    inputFactory.configureForSpeed()
 
-    import Resource._
+  private val inputFactory: WstxInputFactory = new WstxInputFactory()
+  inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
+  inputFactory.configureForSpeed()
+
+  import Resource._
+
+  def withXMLStreamReader2[T](s: String)(f: XMLStreamReader2 => T): T = {
+    Resource.using(inputFactory.createXMLStreamReader(new StringReader(s)).asInstanceOf[XMLStreamReader2])(f)
+  }
+
+  def withXMLStreamReader2[T](is: InputStream)(f: XMLStreamReader2 => T): T = {
     Resource.using(inputFactory.createXMLStreamReader(is).asInstanceOf[XMLStreamReader2])(f)
+  }
+
+  /**
+   * Attempt to get the root element name from the passed in XML.
+   *
+   * Note: This is really more of a "getFirstElementName" since it will just return the first element it finds
+   *       even if if it not a valid XML document.  e.g. "<foo></bar>" will return "foo"
+   *
+   * @param xml The XML
+   * @return The root element name or None if there is none
+   */
+  def getRootElementName(xml: String): Option[String] = {
+    if (xml.isBlank) return None
+
+    withXMLStreamReader2(xml){ reader: XMLStreamReader2 =>
+      Try {
+        reader.seekToRootElement()
+        reader.getLocalName
+      }.toOption
+    }
   }
     
   /**

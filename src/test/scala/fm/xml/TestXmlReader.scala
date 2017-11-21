@@ -18,6 +18,19 @@ package fm.xml
 import org.scalatest.{FunSuite, Matchers}
 
 final class TestXmlReader extends FunSuite with Matchers {
-  
+
+  test("getRootElementName") {
+    XmlReader.getRootElementName("") should equal (None)
+    XmlReader.getRootElementName(null) should equal (None)
+    XmlReader.getRootElementName(" ") should equal (None)
+    XmlReader.getRootElementName("foo") should equal (None)
+    XmlReader.getRootElementName("  <foo bar  ") should equal (None)
+
+    XmlReader.getRootElementName("<foo>") should equal (Some("foo"))
+    XmlReader.getRootElementName("<foo/>") should equal (Some("foo"))
+    XmlReader.getRootElementName("<foo></bar>") should equal (Some("foo"))
+    XmlReader.getRootElementName("<foo></bar>not valid xml<bar></foo>") should equal (Some("foo"))
+    XmlReader.getRootElementName("<foo><bar>valid xml</bar></foo>") should equal (Some("foo"))
+  }
   
 }
