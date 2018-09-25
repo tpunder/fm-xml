@@ -20,14 +20,12 @@ import org.scalatest.{FunSuite, Matchers}
 import scala.beans.BeanProperty
 
 final class SimpleFeedPart {
-
   @BeanProperty var uniqueId: String = _
   @BeanProperty var source: String = _
   @BeanProperty var name: String = _
 }
 
 final class TestXmlReaderWriter extends FunSuite with Matchers {
-  
   private def verifySimple(xml: String): Unit = {
     val reader = makeReader(xml)
     reader.hasNext should equal(true)
@@ -58,11 +56,11 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
   test("Simple Part - Reading") {
     verifySimple(simplePartXml)
   }
-  
+
     private val simplePartOneLineXml = """<?xml version='1.0' encoding='UTF-8'?>
 <feed><part><uniqueId>ONE</uniqueId><source>foo</source><name>Simple Part One</name></part><part><uniqueId>TWO</uniqueId><source>foo</source><name>Simple Part Two</name></part></feed>
 """
-  
+
   test("Simple Part One Line - Reading") {
     verifySimple(simplePartOneLineXml)
   }
@@ -70,7 +68,7 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
     private val simplePartOneLineExtraClosingTagXml = """<?xml version='1.0' encoding='UTF-8'?>
 <feed><part><uniqueId>ONE</uniqueId><source>foo</source><name>Simple Part One</name></part><part><uniqueId>TWO</uniqueId><source>foo</source><name>Simple Part Two</name></part></feed></feed>
 """
-  
+
   test("Simple Part One Line with Extra Closing Tag - Reading") {
     verifySimple(simplePartOneLineExtraClosingTagXml)
   }
@@ -78,7 +76,7 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
   private val simplePartOneLineXmlWithoutXmlDecl = """
 <feed><part><uniqueId>ONE</uniqueId><source>foo</source><name>Simple Part One</name></part><part><uniqueId>TWO</uniqueId><source>foo</source><name>Simple Part Two</name></part></feed>
 """.trim
-  
+
   test("Simple Part One Line Without XML Declaration - Reading") {
     verifySimple(simplePartOneLineXmlWithoutXmlDecl)
   }
@@ -124,7 +122,7 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
     oneReader.hasNext should equal(true)
     checkOne(oneReader.next)
     oneReader.hasNext should equal(false)
-    
+
     // This should only read the <two> element
     val twoReader = makeReader(mixedPartXml, item="two")
     twoReader.hasNext should equal(true)
@@ -159,7 +157,7 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
     checkTwo(reader.next)
     reader.hasNext should equal(false)
   }
-  
+
     private val deepNestedPartXml = """<?xml version='1.0' encoding='UTF-8'?>
 <feed>
   <foo><bar>asdasd</bar><part><uniqueId>SKIPME</uniqueId></part></foo>
@@ -184,15 +182,15 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
 </feed>
 """
   test("Deep Nested Part - Reading") {
-    val reader = makeReader(deepNestedPartXml, item="items/items2/items3/part")    
-    reader.hasNext should equal(true)    
+    val reader = makeReader(deepNestedPartXml, item="items/items2/items3/part")
+    reader.hasNext should equal(true)
     checkOne(reader.next)
     reader.hasNext should equal(true)
     checkTwo(reader.next)
     reader.hasNext should equal(false)
   }
-    
-    
+
+
   private val multiNestedPartXml = """<?xml version='1.0' encoding='UTF-8'?>
 <feed>
   <foo><bar>asdasd</bar><part><uniqueId>SKIPME</uniqueId></part></foo>
@@ -230,28 +228,28 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
 </feed>
 """
   test("Multi-Nested Part - Reading") {
-    val reader = makeReader(multiNestedPartXml, item="items/part")    
-    reader.hasNext should equal(true)    
+    val reader = makeReader(multiNestedPartXml, item="items/part")
+    reader.hasNext should equal(true)
     checkOne(reader.next)
     reader.hasNext should equal(true)
     checkTwo(reader.next)
-    reader.hasNext should equal(true)    
+    reader.hasNext should equal(true)
     checkOne(reader.next)
     reader.hasNext should equal(true)
     checkTwo(reader.next)
     reader.hasNext should equal(false)
   }
-  
+
   private val emptyFeedXml = """<?xml version='1.0' encoding='UTF-8'?>
 <feed>
 </feed>
 """
-    
+
   test("Empty Feed") {
     val reader = makeReader(emptyFeedXml, item="items/part")
     reader.hasNext should equal(false)
   }
-    
+
   test("Feed that has elements but not what we are looking for") {
     val reader = makeReader(nestedPartXml, item="items/element_that_does_not_exist")
     reader.hasNext should equal(false)
