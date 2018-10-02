@@ -28,6 +28,9 @@ libraryDependencies ++= Seq(
   "com.frugalmechanic" %% "fm-lazyseq" % "0.9.0",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2",
   "com.fasterxml.woodstox" % "woodstox-core" % "5.0.2",
-  "com.sun.xml.bind" % "jaxb-ri" % "2.3.0.1", // JAXB - Needed for Java 9+ since it is no long automatically available
+  "com.sun.xml.bind" % "jaxb-core" % "2.3.0.1", // JAXB - Needed for Java 9+ since it is no longer automatically available
+  "com.sun.xml.bind" % "jaxb-impl" % "2.3.0.1", // JAXB - Needed for Java 9+ since it is no longer automatically available
+  "javax.xml.bind" % "jaxb-api" % "2.3.0", // JAXB - Needed for Java 9+ since it is no longer automatically available
+  "javax.activation" % "javax.activation-api" % "1.2.0", // JAXB - Needed for Java 9+ since it is no longer automatically available
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
