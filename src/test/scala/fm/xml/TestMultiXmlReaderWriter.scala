@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Frugal Mechanic (http://frugalmechanic.com)
+ * Copyright 2018 Frugal Mechanic (http://frugalmechanic.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -431,6 +431,6 @@ final class TestMultiXmlReaderWriter extends FunSuite with Matchers with Logging
   }
 
   private def makeReader(xml: String, root: String = "feed", paths: Seq[XmlReaderPath[_, MyPathValue]] = Seq(PartPath, PricePath)): Iterator[MyPathValue] = {
-    MultiXmlReaderWriter[MyPathValue]("feed")(paths.head, paths.tail:_*).reader(new StringReader(xml)).toIndexedSeq.iterator
+    XmlReader[MyPathValue]("feed", new StringReader(xml), paths.head, paths.tail:_*).toIndexedSeq.iterator
   }
 }
