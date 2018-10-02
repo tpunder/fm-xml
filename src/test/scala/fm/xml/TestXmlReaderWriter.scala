@@ -28,7 +28,7 @@ final class SimpleFeedPart {
 
 final class TestXmlReaderWriter extends FunSuite with Matchers {
   
-  private def verifySimple(xml: String) {
+  private def verifySimple(xml: String): Unit = {
     val reader = makeReader(xml)
     reader.hasNext should equal(true)
     checkOne(reader.next)
@@ -260,7 +260,7 @@ final class TestXmlReaderWriter extends FunSuite with Matchers {
   private val checkOne = checkPart(_: SimpleFeedPart, "ONE", "foo", "Simple Part One")
   private val checkTwo = checkPart(_: SimpleFeedPart, "TWO", "foo", "Simple Part Two")
     
-  private def checkPart(part: SimpleFeedPart, uniqueId: String, source: String, name: String) {
+  private def checkPart(part: SimpleFeedPart, uniqueId: String, source: String, name: String): Unit = {
     part.uniqueId should equal(uniqueId)
     part.source should equal(source)
     part.name should equal(name)

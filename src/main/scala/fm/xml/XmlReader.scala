@@ -121,7 +121,7 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
     else r
   }
   
-  protected def foreachWithResource[U](f: T => U, reader: Reader) {
+  protected def foreachWithResource[U](f: T => U, reader: Reader): Unit = {
     val unmarshaller: Unmarshaller = jaxbContext.createUnmarshaller()
     val inputFactory = new WstxInputFactory()
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
@@ -191,7 +191,7 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
     currentDepth
   }
   
-  protected def consumeRestOfStream(xmlStreamReader: XMLStreamReader2) {
+  protected def consumeRestOfStream(xmlStreamReader: XMLStreamReader2): Unit = {
     var done: Boolean = false
     
     while (!done && xmlStreamReader.hasNext()) {

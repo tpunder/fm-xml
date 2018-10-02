@@ -35,13 +35,13 @@ final class ParallelXmlWriter[T: ClassTag](rootName: String, itemName: String, o
     }
   }
   
-  private def writeXml(xml: String) {
+  private def writeXml(xml: String): Unit = {
     outputStream.write(xml.getBytes(encoding))
   }
   
   private[this] val builder = new LazySeqBuilder[T]
   
-  def write(item: T) {
+  def write(item: T): Unit = {
     builder += item
   }
   
@@ -65,7 +65,7 @@ final class ParallelXmlWriter[T: ClassTag](rootName: String, itemName: String, o
     outputStream.close()
   }
   
-  def close() {
+  def close(): Unit = {
     builder.close()
   }
 }

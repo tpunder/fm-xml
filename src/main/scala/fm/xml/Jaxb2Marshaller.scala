@@ -129,7 +129,7 @@ final class Jaxb2Marshaller(context: JAXBContext) extends Logging {
     sw.toString
   }
 
-  def toXml(o: Any, os: java.io.OutputStream) {
+  def toXml(o: Any, os: java.io.OutputStream): Unit = {
     marshaller.marshal(o, new StreamResult(os))
   }
 }

@@ -66,18 +66,18 @@ final class XmlWriter(classes: Seq[Class[_]], rootName: String, defaultNamespace
     xmlStreamWriter.writeEndElement()
   }
 
-  def writeWrapperElement(name: String) (f: => Unit) {
+  def writeWrapperElement(name: String) (f: => Unit): Unit = {
     writeStartElement(name)
     f
     writeEndElement()
   }
   
-  def write(item: AnyRef) {
+  def write(item: AnyRef): Unit = {
     init
     marshaller.marshal(item, xmlStreamWriter)
   }
   
-  def close() {
+  def close(): Unit = {
     init
     xmlStreamWriter.writeEndElement() // could do writeEndDocument but that's probably sloppy
     xmlStreamWriter.flush()

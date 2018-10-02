@@ -29,11 +29,11 @@ final case class XmlReaderWriter[T: ClassTag](rootName: String, itemName: String
   def reader(r: Reader)             : XmlReader[T] = reader(SingleUseResource(r))
   def reader(r: Resource[Reader])   : XmlReader[T] = new XmlReader(rootName, itemName, defaultNamespaceURI, overrideDefaultNamespaceURI, r)
   
-  def write(f: File)(fun: XmlWriter => Unit) {
+  def write(f: File)(fun: XmlWriter => Unit): Unit = {
     FileUtil.writeFile(f, true){ os => write(os)(fun) }
   }
   
-  def write(os: OutputStream)(fun: XmlWriter => Unit) {
+  def write(os: OutputStream)(fun: XmlWriter => Unit): Unit = {
     val writer = new XmlWriter(classes, rootName, defaultNamespaceURI, os)
     fun(writer)
     writer.close()
