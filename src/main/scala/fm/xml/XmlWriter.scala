@@ -42,7 +42,7 @@ final class XmlWriter(classes: Seq[Class[_]], rootName: String, defaultNamespace
   private lazy val init: Unit = {
     xmlStreamWriter.writeStartDocument(encoding, "1.0")
     
-    if (defaultNamespace.isNotBlank) {
+    if (defaultNamespace.isNotNullOrBlank) {
       xmlStreamWriter.setDefaultNamespace(defaultNamespace)
       xmlStreamWriter.writeStartElement(defaultNamespace, rootName)
       xmlStreamWriter.writeDefaultNamespace(defaultNamespace)
@@ -56,7 +56,7 @@ final class XmlWriter(classes: Seq[Class[_]], rootName: String, defaultNamespace
     init
     
     // Need to use the defaultNamespace so validation works
-    if (defaultNamespace.isNotBlank) xmlStreamWriter.writeStartElement(defaultNamespace, name)
+    if (defaultNamespace.isNotNullOrBlank) xmlStreamWriter.writeStartElement(defaultNamespace, name)
     else xmlStreamWriter.writeStartElement(name)
   }
 

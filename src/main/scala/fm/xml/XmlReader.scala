@@ -55,7 +55,7 @@ object XmlReader {
    * @return The root element name or None if there is none
    */
   def getRootElementName(xml: String): Option[String] = {
-    if (xml.isBlank) return None
+    if (xml.isNullOrBlank) return None
 
     withXMLStreamReader2(xml){ reader: XMLStreamReader2 =>
       Try {
@@ -70,7 +70,7 @@ object XmlReader {
    * in the feed but JAXB expects the default namespace to be "http://www.aftermarket.org"
    */
   private class DefaultNamespaceStreamReaderDelegate(self: XMLStreamReader2, defaultNamespaceURI: String) extends StreamReader2Delegate(self) {
-    Predef.require(defaultNamespaceURI.isNotBlank, "Expected defaultNamespace to be not blank")
+    Predef.require(defaultNamespaceURI.isNotNullOrBlank, "Expected defaultNamespace to be not blank")
     
     override def getNamespaceURI(): String = {
       val ns: String = super.getNamespaceURI()
@@ -84,11 +84,11 @@ object XmlReader {
    * to something like "www.aftermarket.org" when it should be "http://www.aftermarket.org"
    */
   private class OverrideDefaultNamespaceStreamReaderDelegate(self: XMLStreamReader2, overrideDefaultNamespaceURI: String) extends StreamReader2Delegate(self) {
-    Predef.require(overrideDefaultNamespaceURI.isNotBlank, "Expected overrideDefaultNamespaceURI to be not blank")
+    Predef.require(overrideDefaultNamespaceURI.isNotNullOrBlank, "Expected overrideDefaultNamespaceURI to be not blank")
     
     override def getNamespaceURI(): String = {
       // If the prefix is blank (which I thinks means we are using the default namespace) use the override
-      if (getPrefix().isBlank) overrideDefaultNamespaceURI else super.getNamespaceURI()
+      if (getPrefix().isNullOrBlank) overrideDefaultNamespaceURI else super.getNamespaceURI()
     }
   }
 }
@@ -99,8 +99,8 @@ object XmlReader {
  */
 class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespaceURI: String, overrideDefaultNamespaceURI: String, protected val resource: Resource[Reader]) extends ResourceLazySeq[T, Reader] with Logging {
   
-  if (defaultNamespaceURI.isNotBlank) require(overrideDefaultNamespaceURI.isBlank, "Can't set both defaultNamespaceURI and overrideDefaultNamespaceURI")
-  if (overrideDefaultNamespaceURI.isNotBlank) require(defaultNamespaceURI.isBlank, "Can't set both defaultNamespaceURI and overrideDefaultNamespaceURI")
+  if (defaultNamespaceURI.isNotNullOrBlank) require(overrideDefaultNamespaceURI.isNullOrBlank, "Can't set both defaultNamespaceURI and overrideDefaultNamespaceURI")
+  if (overrideDefaultNamespaceURI.isNotNullOrBlank) require(defaultNamespaceURI.isNullOrBlank, "Can't set both defaultNamespaceURI and overrideDefaultNamespaceURI")
   
   private[this] val itemClass: Class[T] = classTag[T].runtimeClass.asInstanceOf[Class[T]]
   private[this] val jaxbContext: JAXBContext = JAXBContext.newInstance(itemClass)
@@ -116,8 +116,8 @@ class XmlReader[T: ClassTag](rootName: String, itemPath: String, defaultNamespac
   private[this] val targetDepth: Int = path.length - 1
   
   private def wrapXMLStreamReader2(r: XMLStreamReader2): XMLStreamReader2 = {
-    if (overrideDefaultNamespaceURI.isNotBlank) new XmlReader.OverrideDefaultNamespaceStreamReaderDelegate(r, overrideDefaultNamespaceURI)
-    else if (defaultNamespaceURI.isNotBlank) new XmlReader.DefaultNamespaceStreamReaderDelegate(r, defaultNamespaceURI)
+    if (overrideDefaultNamespaceURI.isNotNullOrBlank) new XmlReader.OverrideDefaultNamespaceStreamReaderDelegate(r, overrideDefaultNamespaceURI)
+    else if (defaultNamespaceURI.isNotNullOrBlank) new XmlReader.DefaultNamespaceStreamReaderDelegate(r, defaultNamespaceURI)
     else r
   }
   
